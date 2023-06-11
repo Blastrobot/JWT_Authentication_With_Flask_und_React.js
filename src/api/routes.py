@@ -59,11 +59,25 @@ def login():
     return jsonify(access_token=access_token), 200
 
 
+@api.route('/signup', methods=['POST'])
+def register_user():
+    request_body = request.get_json()
+    print("aqui")
+    user = User(
+        email = request_body['email'],
+        password = request_body['password'],
+        is_active = request_body['is_active']
+    )
+    db.session.add(user)
+    db.session.commit()
+    return jsonify(request_body), 200
+
+
 # Protect a route with jwt_required, which will kick out requests
 # without a valid JWT present.
-@api.route('/private', methods=['GET'])
+@api.route('/profile', methods=['GET'])
 @jwt_required()
-def private():
+def profile():
     # Access the identity of the current user with GET JWT identity
     current_user = get_jwt_identity()
     response_body = {
